@@ -111,3 +111,6 @@ src/Rapporteringsregisteret.Web/assets/less/*.css
 
 MetricResults/
 *.sln.ide/
+
+# Xamarin crap
+*.userprefs
