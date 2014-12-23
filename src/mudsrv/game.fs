@@ -14,8 +14,12 @@ module Game =
         Location: Point
         }
 
-    let AcceptCommand = 
-        printf "Enter command: "
+
+    let UpdateDisplay character =
+        printfn "Now at (%i, %i)." character.Location.X character.Location.Y
+
+    let AcceptCommand character = 
+        printf "Enter command for %s: " character.Name
         let command = Console.ReadLine().ToLower();
         match command with
         | "north" -> Some({ X = 0; Y = -1 })
@@ -25,7 +29,7 @@ module Game =
         | "quit" -> None
         | _ -> Some({ X = 0; Y = 0 })
 
-    let Move character delta : Character = 
+    let Move character delta = 
         let newCharacter = { 
             Name = character.Name;
             Location = { X = (character.Location.X + delta.X); Y = (character.Location.Y + delta.Y) }
@@ -33,9 +37,19 @@ module Game =
 
         newCharacter
 
-    let GameLoop character =
-        let command = AcceptCommand
+    let GameLoop name =
+        let mutable character = { Name = name; Location = { X = 0; Y = 0 } }
+        let mutable continueLooping = true 
 
-        match command with
-        | Some delta -> Move character delta
-        | None -> character
+        while continueLooping do
+            let delta = AcceptCommand character
+
+            if delta = None then 
+                continueLooping <- false
+            else
+                character <- Move character delta.Value
+
+                UpdateDisplay character
+
+        printfn "Thanks for playing!"
+        0
