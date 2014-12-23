@@ -1,0 +1,21 @@
+{
+    "version": "0.0.0.0",
+    "authors": ["ekepes"],
+    "description": "A MUD built in F#",
+  
+    "dependencies": {
+        "YoloDev.FSharp.AspNet": "0.1-*"
+    },
+    
+    "code": [ "main.fs" ],
+
+    "language": {
+        "name": "F#",
+        "assembly": "YoloDev.FSharp.AspNet",
+        "projectReferenceProviderType": "YoloDev.FSharp.AspNet.FSharpProjectReferenceProvider"        
+    },
+
+    "frameworks": {
+        "aspnet50": { }
+    }
+}
