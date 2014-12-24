@@ -20,10 +20,17 @@ module Game =
         }
 
     let CreateMap =
-        let map = [ { Name = "Gatehouse"; Location = { X = 2; Y = 0 } }; { Name = "Great Hall"; Location = { X = 2; Y = -1 } }; { Name = "Front Lawn"; Location = { X = 2; Y = 1 } } ]
+        let map = [ 
+            { Name = "Gatehouse"; Location = { X = 2; Y = 0 } }; 
+            { Name = "Great Hall"; Location = { X = 2; Y = -1 } }; 
+            { Name = "Front Lawn"; Location = { X = 2; Y = 1 } } ]
+
         map
 
     let isLocation checkLocation elem = (elem.Location.X = checkLocation.X && elem.Location.Y = checkLocation.Y)
+
+    let IsValidLocation (map: list<Room>) (location: Point) : bool =
+        (List.tryFindIndex (isLocation location) map) <> None
 
     let FindRoom (map: list<Room>) (location: Point) : Room = 
         List.find (isLocation location) map
@@ -43,13 +50,10 @@ module Game =
         | "quit" -> None
         | _ -> Some({ X = 0; Y = 0 })
 
-    let Move character delta = 
-        let newCharacter = { 
-            Name = character.Name;
-            Location = { X = (character.Location.X + delta.X); Y = (character.Location.Y + delta.Y) }
-            }
-
-        newCharacter
+    let Move map character delta = 
+        let newLocation = { X = (character.Location.X + delta.X); Y = (character.Location.Y + delta.Y) }
+        if IsValidLocation map newLocation then { Name = character.Name; Location = newLocation }
+        else character
 
     let GameLoop name =
         let map = CreateMap
@@ -64,7 +68,7 @@ module Game =
             if delta = None then 
                 continueLooping <- false
             else
-                character <- Move character delta.Value
+                character <- Move map character delta.Value
 
         printfn "Thanks for playing!"
         0
