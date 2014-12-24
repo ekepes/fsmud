@@ -14,9 +14,23 @@ module Game =
         Location: Point
         }
 
+    type Room = {
+        Name: string;
+        Location: Point
+        }
 
-    let UpdateDisplay character =
-        printfn "Now at (%i, %i)." character.Location.X character.Location.Y
+    let CreateMap =
+        let map = [ { Name = "Gatehouse"; Location = { X = 2; Y = 0 } }; { Name = "Great Hall"; Location = { X = 2; Y = -1 } }; { Name = "Front Lawn"; Location = { X = 2; Y = 1 } } ]
+        map
+
+    let isLocation checkLocation elem = (elem.Location.X = checkLocation.X && elem.Location.Y = checkLocation.Y)
+
+    let FindRoom (map: list<Room>) (location: Point) : Room = 
+        List.find (isLocation location) map
+
+    let UpdateDisplay character map =
+        let currentLocation = FindRoom map character.Location
+        printfn "Now at (%s)." currentLocation.Name
 
     let AcceptCommand character = 
         printf "Enter command for %s: " character.Name
@@ -38,18 +52,19 @@ module Game =
         newCharacter
 
     let GameLoop name =
-        let mutable character = { Name = name; Location = { X = 0; Y = 0 } }
+        let map = CreateMap
+        let mutable character = { Name = name; Location = { X = 2; Y = 0 } }
         let mutable continueLooping = true 
 
         while continueLooping do
+            UpdateDisplay character map
+
             let delta = AcceptCommand character
 
             if delta = None then 
                 continueLooping <- false
             else
                 character <- Move character delta.Value
-
-                UpdateDisplay character
 
         printfn "Thanks for playing!"
         0
