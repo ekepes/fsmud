@@ -4,70 +4,96 @@ module Game =
 
     open System
 
-    type Point = {
-        X: int;
-        Y: int
+    type Direction = 
+        | North
+        | South
+        | East
+        | West
+
+    let DirectionName direction =
+        match direction with
+        | North -> "north"
+        | South -> "south"
+        | East -> "east"
+        | West -> "west"
+
+    type Room = {
+        Id: int;
+        Name: string
+        }
+
+    type Hallway = {
+        Direction: Direction
+        StartRoom: int;
+        EndRoom: int
+        }
+
+    type Map = {
+        Rooms: list<Room>;
+        Hallways: list<Hallway>
         }
 
     type Character = {
         Name: string;
-        Location: Point
-        }
-
-    type Room = {
-        Name: string;
-        Location: Point
-        }
-
-    type Delta = {
-        dX: int;
-        dY: int
+        Location: Room
         }
 
     type Command = 
-        | Move of delta : Delta
+        | Move of direction : Direction
         | Quit
         | Illegal of message : string
 
     let CreateMap =
-        let map = [ 
-            { Name = "Gatehouse"; Location = { X = 2; Y = 0 } }; 
-            { Name = "Great Hall"; Location = { X = 2; Y = -1 } }; 
-            { Name = "Front Lawn"; Location = { X = 2; Y = 1 } } ]
+        let rooms = [ 
+            { Id = 0; Name = "Gatehouse" }; 
+            { Id = 1; Name = "Great Hall" }; 
+            { Id = 2; Name = "Front Lawn" } ]
 
-        map
+        let hallways = [
+            { Direction = North; StartRoom = 0; EndRoom = 1 };
+            { Direction = South; StartRoom = 1; EndRoom = 0 };
+            { Direction = South; StartRoom = 0; EndRoom = 2 };
+            { Direction = North; StartRoom = 2; EndRoom = 0 }]
 
-    let isLocation checkLocation elem = (elem.Location.X = checkLocation.X && elem.Location.Y = checkLocation.Y)
+        { Rooms = rooms; Hallways = hallways }
 
-    let IsValidLocation (map: list<Room>) (location: Point) : bool =
-        (List.tryFindIndex (isLocation location) map) <> None
+    let FindRoom map id = 
+        List.find (fun r -> r.Id = id) map.Rooms
 
-    let FindRoom (map: list<Room>) (location: Point) : Room = 
-        List.find (isLocation location) map
+    let FindLegalMoves map id = 
+        List.filter (fun h -> h.StartRoom = id) map.Hallways
+
+    let GetLegalMoves map id =
+        List.collect(fun hallway -> [ hallway.Direction ]) (FindLegalMoves map id)
+
+    let GetLegalMoveStrings map id =
+        List.collect(fun hallway -> [ DirectionName hallway.Direction ]) (FindLegalMoves map id)
+
+    let GetLegalMovesMessage map id =
+        String.concat ", " (GetLegalMoveStrings map id)
 
     let UpdateDisplay character map =
-        let currentLocation = FindRoom map character.Location
-        printfn "Now at (%s)." currentLocation.Name
+        printfn "Now at (%s). Valid Moves are (%s)." character.Location.Name (GetLegalMovesMessage map character.Location.Id)
 
     let AcceptCommand character = 
         printf "Enter command for %s: " character.Name
         let command = Console.ReadLine().ToLower();
         match command with
-        | "north" -> Move({ dX = 0; dY = -1 })
-        | "south" -> Move({ dX = 0; dY = 1 })
-        | "east" -> Move({ dX = 1; dY = 0 })
-        | "west" -> Move({ dX = -1; dY = 0 })
+        | "north" -> Move(North)
+        | "south" -> Move(South)
+        | "east" -> Move(East)
+        | "west" -> Move(West)
         | "quit" -> Quit
         | _ -> Illegal("I don't understand.")
 
-    let Move map character delta = 
-        let newLocation = { X = (character.Location.X + delta.dX); Y = (character.Location.Y + delta.dY) }
-        if IsValidLocation map newLocation then { Name = character.Name; Location = newLocation }
-        else character
+    let Move map character direction = 
+        match List.tryFind (fun hallway -> hallway.StartRoom = character.Location.Id && hallway.Direction = direction) (map.Hallways) with
+        | Some hallway -> { Name = character.Name; Location = FindRoom map hallway.EndRoom }
+        | None -> character
 
     let GameLoop name =
         let map = CreateMap
-        let mutable character = { Name = name; Location = { X = 2; Y = 0 } }
+        let mutable character = { Name = name; Location = FindRoom map 0 }
         let mutable continueLooping = true 
 
         while continueLooping do
@@ -76,7 +102,7 @@ module Game =
             let command = AcceptCommand character
 
             match command with
-            | Move delta -> character <- Move map character delta
+            | Move direction -> character <- Move map character direction
             | Quit -> continueLooping <- false
             | Illegal message -> printfn "%s" message
 
