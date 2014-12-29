@@ -19,6 +19,16 @@ module Game =
         Location: Point
         }
 
+    type Delta = {
+        dX: int;
+        dY: int
+        }
+
+    type Command = 
+        | Move of delta : Delta
+        | Quit
+        | Illegal of message : string
+
     let CreateMap =
         let map = [ 
             { Name = "Gatehouse"; Location = { X = 2; Y = 0 } }; 
@@ -43,15 +53,15 @@ module Game =
         printf "Enter command for %s: " character.Name
         let command = Console.ReadLine().ToLower();
         match command with
-        | "north" -> Some({ X = 0; Y = -1 })
-        | "south" -> Some({ X = 0; Y = 1 })
-        | "east" -> Some({ X = 1; Y = 0 })
-        | "west" -> Some({ X = -1; Y = 0 })
-        | "quit" -> None
-        | _ -> Some({ X = 0; Y = 0 })
+        | "north" -> Move({ dX = 0; dY = -1 })
+        | "south" -> Move({ dX = 0; dY = 1 })
+        | "east" -> Move({ dX = 1; dY = 0 })
+        | "west" -> Move({ dX = -1; dY = 0 })
+        | "quit" -> Quit
+        | _ -> Illegal("I don't understand.")
 
     let Move map character delta = 
-        let newLocation = { X = (character.Location.X + delta.X); Y = (character.Location.Y + delta.Y) }
+        let newLocation = { X = (character.Location.X + delta.dX); Y = (character.Location.Y + delta.dY) }
         if IsValidLocation map newLocation then { Name = character.Name; Location = newLocation }
         else character
 
@@ -63,12 +73,12 @@ module Game =
         while continueLooping do
             UpdateDisplay character map
 
-            let delta = AcceptCommand character
+            let command = AcceptCommand character
 
-            if delta = None then 
-                continueLooping <- false
-            else
-                character <- Move map character delta.Value
+            match command with
+            | Move delta -> character <- Move map character delta
+            | Quit -> continueLooping <- false
+            | Illegal message -> printfn "%s" message
 
         printfn "Thanks for playing!"
         0
