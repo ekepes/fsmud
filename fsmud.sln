@@ -4,6 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "mudsrv", "src\mudsrv\mudsrv.fsproj", "{5EAB409D-BBED-44CF-AE48-5C0C0355471D}"
 EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "mudsrv.tests", "tests\mudsrv.tests\mudsrv.tests.fsproj", "{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -11,6 +13,12 @@ Global
 		AppStore|Any CPU = AppStore|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B956BC-AE68-4E41-84E9-3A1A14B1DE68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EAB409D-BBED-44CF-AE48-5C0C0355471D}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EAB409D-BBED-44CF-AE48-5C0C0355471D}.AppStore|Any CPU.Build.0 = Debug|Any CPU
 		{5EAB409D-BBED-44CF-AE48-5C0C0355471D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
