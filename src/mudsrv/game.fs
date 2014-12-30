@@ -45,15 +45,26 @@ module Game =
 
     let CreateMap =
         let rooms = [ 
-            { Id = 0; Name = "Gatehouse" }; 
-            { Id = 1; Name = "Great Hall" }; 
-            { Id = 2; Name = "Front Lawn" } ]
+            { Id = 0; Name = "Reception Desk" }; 
+            { Id = 1; Name = "Water Cooler" }; 
+            { Id = 2; Name = "Parking Lot" };
+            { Id = 3; Name = "Boss's Office"};
+            { Id = 4; Name = "Copy Room"};
+            { Id = 5; Name = "Cube Farm"}
+            ]
 
         let exits = [
-            { Direction = North; StartRoom = 0; EndRoom = 1 };
-            { Direction = South; StartRoom = 1; EndRoom = 0 };
+            { Direction = North; StartRoom = 0; EndRoom = 5 };
+            { Direction = South; StartRoom = 5; EndRoom = 0 };
             { Direction = South; StartRoom = 0; EndRoom = 2 };
-            { Direction = North; StartRoom = 2; EndRoom = 0 }]
+            { Direction = North; StartRoom = 2; EndRoom = 0 };
+            { Direction = East; StartRoom = 5; EndRoom = 1 };
+            { Direction = West; StartRoom = 1; EndRoom = 5 };
+            { Direction = West; StartRoom = 5; EndRoom = 4 };
+            { Direction = East; StartRoom = 4; EndRoom = 5 };
+            { Direction = North; StartRoom = 1; EndRoom = 3 };
+            { Direction = South; StartRoom = 3; EndRoom = 1 }
+            ]
 
         { Rooms = rooms; Exits = exits }
 
