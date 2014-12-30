@@ -22,7 +22,7 @@ module Game =
         Name: string
         }
 
-    type Hallway = {
+    type Exit = {
         Direction: Direction
         StartRoom: int;
         EndRoom: int
@@ -30,7 +30,7 @@ module Game =
 
     type Map = {
         Rooms: list<Room>;
-        Hallways: list<Hallway>
+        Exits: list<Exit>
         }
 
     type Character = {
@@ -49,25 +49,25 @@ module Game =
             { Id = 1; Name = "Great Hall" }; 
             { Id = 2; Name = "Front Lawn" } ]
 
-        let hallways = [
+        let exits = [
             { Direction = North; StartRoom = 0; EndRoom = 1 };
             { Direction = South; StartRoom = 1; EndRoom = 0 };
             { Direction = South; StartRoom = 0; EndRoom = 2 };
             { Direction = North; StartRoom = 2; EndRoom = 0 }]
 
-        { Rooms = rooms; Hallways = hallways }
+        { Rooms = rooms; Exits = exits }
 
     let FindRoom map id = 
         List.find (fun r -> r.Id = id) map.Rooms
 
     let FindLegalMoves map id = 
-        List.filter (fun h -> h.StartRoom = id) map.Hallways
+        List.filter (fun h -> h.StartRoom = id) map.Exits
 
     let GetLegalMoves map id =
-        List.collect(fun hallway -> [ hallway.Direction ]) (FindLegalMoves map id)
+        List.collect(fun exit -> [ exit.Direction ]) (FindLegalMoves map id)
 
     let GetLegalMoveStrings map id =
-        List.collect(fun hallway -> [ DirectionName hallway.Direction ]) (FindLegalMoves map id)
+        List.collect(fun exit -> [ DirectionName exit.Direction ]) (FindLegalMoves map id)
 
     let GetLegalMovesMessage map id =
         String.concat ", " (GetLegalMoveStrings map id)
@@ -87,9 +87,11 @@ module Game =
         | _ -> Illegal("I don't understand.")
 
     let Move map character direction = 
-        match List.tryFind (fun hallway -> hallway.StartRoom = character.Location.Id && hallway.Direction = direction) (map.Hallways) with
-        | Some hallway -> { Name = character.Name; Location = FindRoom map hallway.EndRoom }
-        | None -> character
+        match List.tryFind (fun exit -> exit.StartRoom = character.Location.Id && exit.Direction = direction) (map.Exits) with
+        | Some exit -> { Name = character.Name; Location = FindRoom map exit.EndRoom }
+        | None ->
+            printfn "That is not a valid exit."
+            character
 
     let GameLoop name =
         let map = CreateMap
