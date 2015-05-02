@@ -109,7 +109,9 @@ module Game =
         match (AcceptCommand character) with
         | Move direction -> playGame map (Move map character direction)
         | Quit -> printfn "Thanks for playing!"
-        | Illegal message -> printfn "%s" message        
+        | Illegal message -> 
+            printfn "%s" message
+            playGame map character        
 
     let GameLoop name =
         let map = CreateMap
