@@ -104,20 +104,17 @@ module Game =
             printfn "That is not a valid exit."
             character
 
+    let rec playGame map character = 
+        UpdateDisplay character map        
+        match (AcceptCommand character) with
+        | Move direction -> playGame map (Move map character direction)
+        | Quit -> printfn "Thanks for playing!"
+        | Illegal message -> 
+            printfn "%s" message
+            playGame map character        
+
     let GameLoop name =
         let map = CreateMap
-        let mutable character = { Name = name; Location = FindRoom map 0 }
-        let mutable continueLooping = true 
-
-        while continueLooping do
-            UpdateDisplay character map
-
-            let command = AcceptCommand character
-
-            match command with
-            | Move direction -> character <- Move map character direction
-            | Quit -> continueLooping <- false
-            | Illegal message -> printfn "%s" message
-
-        printfn "Thanks for playing!"
+        let character = { Name = name; Location = FindRoom map 0 }
+        playGame map character
         0
